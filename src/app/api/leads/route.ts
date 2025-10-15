@@ -8,11 +8,16 @@ export async function POST(request: Request) {
     const db = client.db("demo");
     const body = await request.json();
 
+    const standardizedAddress = body.address.trim().toUpperCase();
+    const standardizedCity = body.city.trim().toUpperCase();
+    const standardizedState = body.state.trim().toUpperCase();
+    const standardizedZip = body.zip.trim(); // Zip codes might have specific formats, so only trim for now.
+
     const existingLead = await db.collection("leads").findOne({
-      address: body.address,
-      city: body.city,
-      state: body.state,
-      zip: body.zip,
+      address: standardizedAddress,
+      city: standardizedCity,
+      state: standardizedState,
+      zip: standardizedZip,
     });
 
     if (existingLead) {
@@ -21,6 +26,10 @@ export async function POST(request: Request) {
 
     const lead = {
       ...body,
+      address: standardizedAddress,
+      city: standardizedCity,
+      state: standardizedState,
+      zip: standardizedZip,
       createdAt: new Date(),
       status: "New",
     };

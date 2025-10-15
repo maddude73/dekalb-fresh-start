@@ -92,6 +92,7 @@ async function seedDB() {
     await usersCollection.insertOne({
       username: "admin",
       password: hashedPassword,
+      createdAt: new Date(),
     });
     console.log("Inserted admin user.");
 
