@@ -242,7 +242,7 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, filter, setFilter,
       lead.status,
     ]);
 
-    let csvContent = "data:text/csv;charset=utf-8,"
+    const csvContent = "data:text/csv;charset=utf-8,"
       + headers.join(",") + "\n"
       + rows.map(e => e.join(",")).join("\n");
 
@@ -354,10 +354,12 @@ export default function Admin() {
   }, []);
 
   const sortedAndFilteredLeads = useMemo(() => {
-    const filteredLeads = leads.filter(lead =>
-      lead.name.toLowerCase().includes(filter.toLowerCase()) ||
-      lead.address.toLowerCase().includes(filter.toLowerCase())
-    );
+    const filteredLeads = leads.filter(lead => {
+      const name = lead.name || '';
+      const address = lead.address || '';
+      return name.toLowerCase().includes(filter.toLowerCase()) ||
+             address.toLowerCase().includes(filter.toLowerCase());
+    });
 
     if (sortConfig !== null) {
       filteredLeads.sort((a, b) => {
@@ -378,10 +380,12 @@ export default function Admin() {
   }, [leads, filter, sortConfig]);
 
   const sortedAndFilteredReportingLeads = useMemo(() => {
-    const filteredLeads = leads.filter(lead =>
-      lead.name.toLowerCase().includes(reportingFilter.toLowerCase()) ||
-      lead.address.toLowerCase().includes(reportingFilter.toLowerCase())
-    );
+    const filteredLeads = leads.filter(lead => {
+      const name = lead.name || '';
+      const address = lead.address || '';
+      return name.toLowerCase().includes(reportingFilter.toLowerCase()) ||
+             address.toLowerCase().includes(reportingFilter.toLowerCase());
+    });
 
     if (reportingSortConfig !== null) {
       filteredLeads.sort((a, b) => {

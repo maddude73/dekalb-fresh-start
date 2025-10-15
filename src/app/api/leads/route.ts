@@ -21,7 +21,19 @@ export async function POST(request: Request) {
     });
 
     if (existingLead) {
-      return NextResponse.json({ message: "A lead with this address already exists" }, { status: 409 });
+      // Update existing lead
+      await db.collection("leads").updateOne(
+        { _id: existingLead._id },
+        { $set: {
+            name: body.fullName || existingLead.name,
+            phone: body.phone || existingLead.phone,
+            email: body.email || existingLead.email,
+            freshStartAmount: body.freshStartAmount,
+            updatedAt: new Date(),
+          }
+        }
+      );
+      return NextResponse.json({ message: "Lead updated successfully", status: "updated" });
     }
 
     const lead = {

@@ -1,8 +1,7 @@
 'use client';
 
+import { useState } from 'react';
 import Image from "next/image";
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const initialFormState = {
@@ -18,8 +17,7 @@ export default function Home() {
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState(initialFormState);
   const [touched, setTouched] = useState(initialFormState);
-  const [submissionStatus, setSubmissionStatus] = useState<'initial' | 'success' | 'error' | 'duplicate'>('initial');
-  const router = useRouter();
+  const [submissionStatus, setSubmissionStatus] = useState<'success' | 'duplicate' | 'error' | null>(null);
 
   const validate = () => {
     const newErrors = { ...initialFormState };
@@ -70,9 +68,12 @@ export default function Home() {
     });
 
     if (response.ok) {
-      setSubmissionStatus('success');
-    } else if (response.status === 409) {
-      setSubmissionStatus('duplicate');
+      const data = await response.json();
+      if (data.status === "updated") {
+        setSubmissionStatus('duplicate'); // Use duplicate status to display the updated message
+      } else {
+        setSubmissionStatus('success');
+      }
     } else {
       setSubmissionStatus('error');
     }
@@ -85,7 +86,7 @@ export default function Home() {
       <header className="bg-white shadow-md sticky top-0 z-50">
         <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-                <img src="/silas-f-logo.png" alt="Silas Frazier Realty Logo" className="h-15" />
+                <Image src="/silas-f-logo.png" alt="Silas Frazier Realty Logo" width={60} height={60} />
                 <div className="text-4xl font-serif font-bold text-brand-blue">
                     Dekalb <span className="text-brand-gold">Fresh Start</span>
                 </div>
@@ -137,7 +138,7 @@ export default function Home() {
       <section className="py-16 md:py-24 bg-gray-100">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/3 text-center">
-            <img src="https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F." alt="Silas Frazier" className="rounded-full shadow-2xl mx-auto w-48 h-48 md:w-64 md:h-64 object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F.'; }} />
+            <Image src="https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F." alt="Silas Frazier" width={192} height={192} className="rounded-full shadow-2xl mx-auto object-cover" onError={(e) => { e.currentTarget.src = 'https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F.'; }} />
           </div>
           <div className="md:w-2/3">
             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-brand-blue">A Message From Silas</h2>
@@ -159,6 +160,17 @@ export default function Home() {
               </div>
               <h2 className="text-3xl font-bold text-gray-800 mb-3">Thank You!</h2>
               <p className="text-gray-600 text-lg">We&apos;ve received your information. Silas will personally review it and reach out to you by phone within the next 24 hours to discuss your situation.</p>
+              <p className="text-gray-500 text-sm mt-6">Your new beginning is just around the corner.</p>
+            </div>
+          ) : submissionStatus === 'duplicate' ? (
+            <div id="success-message" className="max-w-2xl mx-auto text-center bg-white p-12 rounded-xl shadow-2xl">
+              <div className="bg-green-100 text-green-600 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-3">Thank You!</h2>
+              <p className="text-gray-600 text-lg">Your address is already on file. We have updated your contact information with your latest changes.</p>
               <p className="text-gray-500 text-sm mt-6">Your new beginning is just around the corner.</p>
             </div>
           ) : (
@@ -206,7 +218,7 @@ export default function Home() {
                   <input type="text" id="freshStartAmount" name="freshStartAmount" placeholder="e.g., $20,000" required onChange={handleChange} onBlur={handleBlur} value={form.freshStartAmount} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition text-lg" />
                 </div>
                 <div>
-                  <button type="submit" disabled={Object.values(errors).some(x => x !== '')} className="w-full bg-brand-blue text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-blue-900 transition duration-300 transform hover:scale-105 disabled:bg-gray-400">
+                  <button type="submit" className="w-full bg-brand-blue text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-blue-900 transition duration-300 transform hover:scale-105">
                     Get My Fresh Start Offer
                   </button>
                 </div>
