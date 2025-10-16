@@ -223,8 +223,7 @@ const DesktopAnalysisDisplay: React.FC<DesktopAnalysisDisplayProps> = ({ selecte
               <div className={`text-center p-4 rounded-lg ${bgColorClass}`}>
                 <p className="text-sm text-gray-500">Recommendation</p>
                 <p className={`font-bold text-2xl ${textColorClass}`}>{recommendationText}</p>
-                <p className="text-sm text-gray-500 mt-2">Deal Score</p>
-                <p className="font-bold text-xl">{analysis.dealScore}/100</p>
+                <p className="font-bold text-xl !text-black">{analysis.dealScore}/100</p>
               </div>
             );
           })()}
@@ -236,13 +235,27 @@ const DesktopAnalysisDisplay: React.FC<DesktopAnalysisDisplayProps> = ({ selecte
 
 interface ReportingCardProps {
   leads: Lead[];
-  filter: string;
-  setFilter: (filter: string) => void;
-  requestSort: (key: keyof Lead) => void;
+  reportingFilter: string;
+  setReportingFilter: (filter: string) => void;
+  reportingSortConfig: { key: keyof Lead; direction: 'ascending' | 'descending' } | null;
+  requestReportingSort: (key: keyof Lead) => void;
   formatAddress: (lead: Lead) => string;
 }
 
-const ReportingCard: React.FC<ReportingCardProps> = ({ leads, filter, setFilter, requestSort, formatAddress }) => {
+const ReportingCard: React.FC<ReportingCardProps> = ({ leads, reportingFilter, setReportingFilter, reportingSortConfig, requestReportingSort, formatAddress }) => {
+  const getRowClass = (lead: Lead) => {
+    if (!lead.analysis) return '';
+    const { profitPotential, dealScore } = lead.analysis;
+
+    if (profitPotential < 0) {
+      return 'bg-red-100'; // Unprofitable
+    } else if (dealScore < 85) {
+      return 'bg-orange-100'; // Borderline
+    } else {
+      return 'bg-green-100'; // Profitable
+    }
+  };
+
   const handleExport = () => {
     const headers = ["Name", "Phone", "Email", "Address", "City", "State", "Zip", "Fresh Start Amount", "Created At", "Market Value", "Mortgage Balance", "Equity", "Profit Potential", "Deal Score", "Status"];
     const rows = leads.map(lead => [
@@ -285,8 +298,8 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, filter, setFilter,
             type="text"
             placeholder="Filter leads..."
             className="p-2 border border-gray-300 rounded-md text-gray-800"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            value={reportingFilter}
+            onChange={(e) => setReportingFilter(e.target.value)}
           />
           <button
             onClick={handleExport}
@@ -300,26 +313,26 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, filter, setFilter,
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestSort('name')}>Name</th>
-              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestSort('address')}>Address</th>
-              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestSort('freshStartAmount')}>Amount</th>
-              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestSort('createdAt')}>Created</th>
+              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('name')}>Name</th>
+              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('address')}>Address</th>
+              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('freshStartAmount')}>Amount</th>
+              <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('createdAt')}>Created</th>
               <th className="py-3 px-6 text-left">Market Value</th>
               <th className="py-3 px-6 text-left">Profit Potential</th>
               <th className="py-3 px-6 text-left">Deal Score</th>
-              <th className="py-3 px-6 text-center cursor-pointer" onClick={() => requestSort('status')}>Status</th>
+              <th className="py-3 px-6 text-center cursor-pointer" onClick={() => requestReportingSort('status')}>Status</th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
             {leads.map((lead) => (
-              <tr key={lead._id} className="border-b border-gray-200 hover:bg-gray-100">
+              <tr key={lead._id} className={`border-b border-gray-200 hover:bg-gray-100 ${getRowClass(lead)}`}>
                 <td className="py-3 px-6 text-left whitespace-nowrap">{lead.name}</td>
                 <td className="py-3 px-6 text-left">{formatAddress(lead)}</td>
                 <td className="py-3 px-6 text-left">${lead.freshStartAmount.toLocaleString()}</td>
                 <td className="py-3 px-6 text-left">{new Date(lead.createdAt).toLocaleDateString()}</td>
                 <td className="py-3 px-6 text-left">{lead.analysis?.marketValue ? `$${lead.analysis.marketValue.toLocaleString()}` : 'N/A'}</td>
                 <td className="py-3 px-6 text-left">{lead.analysis?.profitPotential ? `$${lead.analysis.profitPotential.toLocaleString()}` : 'N/A'}</td>
-                <td className="py-3 px-6 text-left">{lead.analysis?.dealScore || 'N/A'}</td>
+                <td className="py-3 px-6 text-left text-gray-900">{lead.analysis?.dealScore !== undefined && lead.analysis?.dealScore !== null ? lead.analysis.dealScore : 'N/A'}</td>
                 <td className="py-3 px-6 text-center">
                   <span className={`py-1 px-3 rounded-full text-xs ${lead.status === 'New' ? 'bg-blue-200 text-blue-600' : 'bg-green-200 text-green-600'}`}>
                     {lead.status}
@@ -444,12 +457,15 @@ export default function Admin() {
 
   const handleLeadSelect = (lead: Lead) => {
     setSelectedLead(lead);
+    console.log('Selected Lead:', lead);
     if (isMobileView) {
       setIsModalOpen(true);
     }
     if (lead.analysis) {
       setAnalysis(lead.analysis);
       setAnalyzing(false);
+      console.log('Existing Analysis:', lead.analysis);
+      console.log('Existing Deal Score:', lead.analysis.dealScore);
     } else {
       setAnalysis(null);
       setAnalyzing(true);
@@ -470,6 +486,8 @@ export default function Admin() {
         };
         setAnalysis(newAnalysis);
         setAnalyzing(false);
+        console.log('New Analysis:', newAnalysis);
+        console.log('New Deal Score:', newAnalysis.dealScore);
       }, Math.random() * (3000 - 500) + 500);
     }
   };
@@ -544,9 +562,10 @@ export default function Admin() {
         </div>
         <ReportingCard
           leads={sortedAndFilteredReportingLeads}
-          filter={reportingFilter}
-          setFilter={setReportingFilter}
-          requestSort={requestReportingSort}
+          reportingFilter={reportingFilter}
+          setReportingFilter={setReportingFilter}
+          reportingSortConfig={reportingSortConfig}
+          requestReportingSort={requestReportingSort}
           formatAddress={formatAddress}
         />
         {isMobileView && (
@@ -611,7 +630,7 @@ export default function Admin() {
                           <p className="text-sm text-gray-500">Recommendation</p>
                           <p className={`font-bold text-2xl ${textColorClass}`}>{recommendationText}</p>
                           <p className="text-sm text-gray-500 mt-2">Deal Score</p>
-                          <p className="font-bold text-xl">{analysis.dealScore}/100</p>
+                          <p className="font-bold text-xl !text-black">{analysis.dealScore}/100</p>
                         </div>
                       );
                     })()}

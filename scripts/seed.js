@@ -64,6 +64,25 @@ const mockLeads = [
     status: "New",
     createdAt: new Date(),
   },
+  {
+    name: "Unprofitable Property",
+    phone: "555-777-8888",
+    email: "unprofitable.property@example.com",
+    address: "777 Bad Deal Rd",
+    city: "Atlanta",
+    state: "GA",
+    zip: "30303",
+    freshStartAmount: 30000,
+    status: "New",
+    createdAt: new Date(),
+    analysis: {
+      marketValue: 300000,
+      mortgageBalance: 250000,
+      equity: 50000,
+      profitPotential: -10000, // Calculated as equity - freshStartAmount - (marketValue * 0.1)
+      dealScore: 40,
+    },
+  },
 ];
 
 async function seedDB() {

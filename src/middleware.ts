@@ -1,12 +1,13 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyToken } from '@/lib/jwt';
 
-export function middleware(request: NextRequest) {
-  const session = request.cookies.get('session');
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get('token')?.value;
 
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!session) {
+    if (!token || !(await verifyToken(token))) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

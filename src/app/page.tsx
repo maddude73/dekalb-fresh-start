@@ -19,20 +19,6 @@ export default function Home() {
   const [touched, setTouched] = useState(initialFormState);
   const [submissionStatus, setSubmissionStatus] = useState<'success' | 'duplicate' | 'error' | null>(null);
 
-  const validate = () => {
-    const newErrors = { ...initialFormState };
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-
-    if (touched.email && !emailRegex.test(form.email)) {
-      newErrors.email = 'Invalid email address';
-    }
-    if (touched.phone && !phoneRegex.test(form.phone)) {
-      newErrors.phone = 'Invalid phone number';
-    }
-    setErrors(newErrors);
-    return Object.values(newErrors).every(x => x === '');
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,21 +28,17 @@ export default function Home() {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name } = e.target;
     setTouched({ ...touched, [name]: 'true' });
-    validate();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) {
-      return;
-    }
     const response = await fetch('/api/leads', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: form.fullName,
+        fullName: form.fullName,
         phone: form.phone,
         email: form.email,
         address: form.propertyAddress,
@@ -75,7 +57,18 @@ export default function Home() {
         setSubmissionStatus('success');
       }
     } else {
-      setSubmissionStatus('error');
+      const errorData = await response.json();
+      if (response.status === 400 && errorData.errors) {
+        const newErrors = { ...initialFormState };
+        for (const key in errorData.errors) {
+          if (key in newErrors) {
+            newErrors[key as keyof typeof newErrors] = errorData.errors[key][0];
+          }
+        }
+        setErrors(newErrors);
+      } else {
+        setSubmissionStatus('error');
+      }
     }
   };
 
@@ -183,6 +176,7 @@ export default function Home() {
                 <div>
                   <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
                   <input type="text" id="fullName" name="fullName" required onChange={handleChange} onBlur={handleBlur} value={form.fullName} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition" />
+                  {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
@@ -197,25 +191,30 @@ export default function Home() {
                 <div>
                   <label htmlFor="propertyAddress" className="block text-sm font-medium text-gray-700">Property Address</label>
                   <input type="text" id="propertyAddress" name="propertyAddress" required onChange={handleChange} onBlur={handleBlur} value={form.propertyAddress} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition" />
+                  {errors.propertyAddress && <p className="text-red-500 text-xs mt-1">{errors.propertyAddress}</p>}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
                     <input type="text" id="city" name="city" required onChange={handleChange} onBlur={handleBlur} value={form.city} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition" />
+                    {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                   </div>
                   <div>
                     <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
                     <input type="text" id="state" name="state" required onChange={handleChange} onBlur={handleBlur} value={form.state} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition" />
+                    {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
                   </div>
                   <div>
                     <label htmlFor="zip" className="block text-sm font-medium text-gray-700">Zip Code</label>
                     <input type="text" id="zip" name="zip" required onChange={handleChange} onBlur={handleBlur} value={form.zip} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition" />
+                    {errors.zip && <p className="text-red-500 text-xs mt-1">{errors.zip}</p>}
                   </div>
                 </div>
                 <div>
                   <label htmlFor="freshStartAmount" className="block font-medium text-gray-800 text-lg">How much cash would you need for your fresh start?</label>
                   <p className="text-sm text-gray-500 mb-2">This helps us understand your primary goal.</p>
                   <input type="text" id="freshStartAmount" name="freshStartAmount" placeholder="e.g., $20,000" required onChange={handleChange} onBlur={handleBlur} value={form.freshStartAmount} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition text-lg" />
+                  {errors.freshStartAmount && <p className="text-red-500 text-xs mt-1">{errors.freshStartAmount}</p>}
                 </div>
                 <div>
                   <button type="submit" className="w-full bg-[var(--brand-blue)] text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-blue-900 transition duration-300 transform hover:scale-105">

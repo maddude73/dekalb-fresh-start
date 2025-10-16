@@ -1,17 +1,25 @@
 
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { leadSchema } from '@/lib/validation';
 
 export async function POST(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("demo");
     const body = await request.json();
+    const validatedData = leadSchema.safeParse(body);
 
-    const standardizedAddress = body.address.trim().toUpperCase();
-    const standardizedCity = body.city.trim().toUpperCase();
-    const standardizedState = body.state.trim().toUpperCase();
-    const standardizedZip = body.zip.trim(); // Zip codes might have specific formats, so only trim for now.
+    if (!validatedData.success) {
+      return NextResponse.json({ errors: validatedData.error.flatten().fieldErrors }, { status: 400 });
+    }
+
+    const { fullName, phone, email, address, city, state, zip, freshStartAmount } = validatedData.data;
+
+    const standardizedAddress = address.trim().toUpperCase();
+    const standardizedCity = city.trim().toUpperCase();
+    const standardizedState = state.trim().toUpperCase();
+    const standardizedZip = zip.trim(); // Zip codes might have specific formats, so only trim for now.
 
     const existingLead = await db.collection("leads").findOne({
       address: standardizedAddress,
@@ -25,10 +33,10 @@ export async function POST(request: Request) {
       await db.collection("leads").updateOne(
         { _id: existingLead._id },
         { $set: {
-            name: body.fullName || existingLead.name,
-            phone: body.phone || existingLead.phone,
-            email: body.email || existingLead.email,
-            freshStartAmount: body.freshStartAmount,
+            name: fullName || existingLead.name,
+            phone: phone || existingLead.phone,
+            email: email || existingLead.email,
+            freshStartAmount: freshStartAmount,
             updatedAt: new Date(),
           }
         }
@@ -37,11 +45,14 @@ export async function POST(request: Request) {
     }
 
     const lead = {
-      ...body,
+      fullName,
+      phone,
+      email,
       address: standardizedAddress,
       city: standardizedCity,
       state: standardizedState,
       zip: standardizedZip,
+      freshStartAmount,
       createdAt: new Date(),
       status: "New",
     };
