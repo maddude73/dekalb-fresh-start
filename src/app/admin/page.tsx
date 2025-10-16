@@ -216,12 +216,11 @@ interface ReportingCardProps {
   leads: Lead[];
   filter: string;
   setFilter: (filter: string) => void;
-  sortConfig: { key: keyof Lead; direction: 'ascending' | 'descending' } | null;
   requestSort: (key: keyof Lead) => void;
   formatAddress: (lead: Lead) => string;
 }
 
-const ReportingCard: React.FC<ReportingCardProps> = ({ leads, filter, setFilter, sortConfig, requestSort, formatAddress }) => {
+const ReportingCard: React.FC<ReportingCardProps> = ({ leads, filter, setFilter, requestSort, formatAddress }) => {
   const handleExport = () => {
     const headers = ["Name", "Phone", "Email", "Address", "City", "State", "Zip", "Fresh Start Amount", "Created At", "Market Value", "Mortgage Balance", "Equity", "Profit Potential", "Deal Score", "Status"];
     const rows = leads.map(lead => [
@@ -525,7 +524,6 @@ export default function Admin() {
           leads={sortedAndFilteredReportingLeads}
           filter={reportingFilter}
           setFilter={setReportingFilter}
-          sortConfig={reportingSortConfig}
           requestSort={requestReportingSort}
           formatAddress={formatAddress}
         />

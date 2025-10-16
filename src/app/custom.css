@@ -31,3 +31,7 @@ body {
 .smooth-scroll {
     scroll-behavior: smooth;
 }
+
+:root {
+  --brand-blue: #1A237E;
+}

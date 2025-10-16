@@ -86,7 +86,7 @@ export default function Home() {
       <header className="bg-white shadow-md sticky top-0 z-50">
         <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-                <Image src="/silas-f-logo.png" alt="Silas Frazier Realty Logo" width={60} height={60} />
+                <Image src="/silas-f-logo.png" alt="Silas Frazier Realty Logo" width={126} height={126} style={{ width: 'auto', height: 'auto' }} />
                 <div className="text-4xl font-serif font-bold text-brand-blue">
                     Dekalb <span className="text-brand-gold">Fresh Start</span>
                 </div>
@@ -138,7 +138,7 @@ export default function Home() {
       <section className="py-16 md:py-24 bg-gray-100">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/3 text-center">
-            <Image src="https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F." alt="Silas Frazier" width={192} height={192} className="rounded-full shadow-2xl mx-auto object-cover" onError={(e) => { e.currentTarget.src = 'https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F.'; }} />
+            <Image src="https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F." alt="Silas Frazier" width={192} height={192} className="rounded-full shadow-2xl mx-auto object-cover" onError={(e) => { e.currentTarget.src = 'https://placehold.co/300x300/E2E8F0/4A5568?text=Silas+F.'; }} unoptimized />
           </div>
           <div className="md:w-2/3">
             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-brand-blue">A Message From Silas</h2>
@@ -218,7 +218,7 @@ export default function Home() {
                   <input type="text" id="freshStartAmount" name="freshStartAmount" placeholder="e.g., $20,000" required onChange={handleChange} onBlur={handleBlur} value={form.freshStartAmount} className="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-200 rounded-lg focus:ring-brand-blue focus:border-brand-blue transition text-lg" />
                 </div>
                 <div>
-                  <button type="submit" className="w-full bg-brand-blue text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-blue-900 transition duration-300 transform hover:scale-105">
+                  <button type="submit" className="w-full bg-[var(--brand-blue)] text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-blue-900 transition duration-300 transform hover:scale-105">
                     Get My Fresh Start Offer
                   </button>
                 </div>
