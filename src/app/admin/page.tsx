@@ -196,16 +196,38 @@ const DesktopAnalysisDisplay: React.FC<DesktopAnalysisDisplayProps> = ({ selecte
               <p className="font-bold text-lg text-gray-800">${analysis.equity.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">CS3 Profit Potential</p>
+              <p className="text-sm text-gray-600">Profit Potential</p>
               <p className="font-bold text-lg text-gray-800">${analysis.profitPotential.toLocaleString()}</p>
             </div>
           </div>
-          <div className="text-center p-4 rounded-lg bg-green-100">
-            <p className="text-sm text-gray-500">Recommendation</p>
-            <p className="font-bold text-2xl text-green-600">GO - HIGH PROFIT POTENTIAL</p>
-            <p className="text-sm text-gray-500 mt-2">Deal Score</p>
-            <p className="font-bold text-xl">{analysis.dealScore}/100</p>
-          </div>
+          {(() => {
+            let recommendationText = "";
+            let bgColorClass = "";
+            let textColorClass = "";
+
+            if (analysis.profitPotential < 0) {
+              recommendationText = "UNPROFITABLE";
+              bgColorClass = "bg-red-100";
+              textColorClass = "text-red-600";
+            } else if (analysis.dealScore < 85) {
+              recommendationText = "BORDERLINE - LOW DEAL SCORE";
+              bgColorClass = "bg-orange-100";
+              textColorClass = "text-orange-600";
+            } else {
+              recommendationText = "GO - HIGH PROFIT POTENTIAL";
+              bgColorClass = "bg-green-100";
+              textColorClass = "text-green-600";
+            }
+
+            return (
+              <div className={`text-center p-4 rounded-lg ${bgColorClass}`}>
+                <p className="text-sm text-gray-500">Recommendation</p>
+                <p className={`font-bold text-2xl ${textColorClass}`}>{recommendationText}</p>
+                <p className="text-sm text-gray-500 mt-2">Deal Score</p>
+                <p className="font-bold text-xl">{analysis.dealScore}/100</p>
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>
@@ -561,16 +583,38 @@ export default function Admin() {
                         <p className="font-bold text-lg text-gray-800">${analysis.equity.toLocaleString()}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">CS3 Profit Potential</p>
+                        <p className="text-sm text-gray-600">Profit Potential</p>
                         <p className="font-bold text-lg text-gray-800">${analysis.profitPotential.toLocaleString()}</p>
                       </div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-green-100">
-                      <p className="text-sm text-gray-500">Recommendation</p>
-                      <p className="font-bold text-2xl text-green-600">GO - HIGH PROFIT POTENTIAL</p>
-                      <p className="text-sm text-gray-500 mt-2">Deal Score</p>
-                      <p className="font-bold text-xl">{analysis.dealScore}/100</p>
-                    </div>
+                    {(() => {
+                      let recommendationText = "";
+                      let bgColorClass = "";
+                      let textColorClass = "";
+
+                      if (analysis.profitPotential < 0) {
+                        recommendationText = "UNPROFITABLE";
+                        bgColorClass = "bg-red-100";
+                        textColorClass = "text-red-600";
+                      } else if (analysis.dealScore < 85) {
+                        recommendationText = "BORDERLINE - LOW DEAL SCORE";
+                        bgColorClass = "bg-orange-100";
+                        textColorClass = "text-orange-600";
+                      } else {
+                        recommendationText = "GO - HIGH PROFIT POTENTIAL";
+                        bgColorClass = "bg-green-100";
+                        textColorClass = "text-green-600";
+                      }
+
+                      return (
+                        <div className={`text-center p-4 rounded-lg ${bgColorClass}`}>
+                          <p className="text-sm text-gray-500">Recommendation</p>
+                          <p className={`font-bold text-2xl ${textColorClass}`}>{recommendationText}</p>
+                          <p className="text-sm text-gray-500 mt-2">Deal Score</p>
+                          <p className="font-bold text-xl">{analysis.dealScore}/100</p>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
