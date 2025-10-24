@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 // ... (interfaces and other code remain the same)
 
@@ -40,8 +41,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-lg mx-4">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-lg mx-4">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
         {children}
@@ -65,18 +66,18 @@ const LeadTable: React.FC<LeadTableProps> = ({ leads, handleLeadSelect, openMenu
   <div className="hidden md:block overflow-x-auto">
     <table className="w-full table-auto">
       <thead>
-        <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+        <tr className="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
           <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestSort('name')}>Name</th>
           <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestSort('address')}>Address</th>
           <th className="py-3 px-6 text-center cursor-pointer" onClick={() => requestSort('status')}>Status</th>
           <th className="py-3 px-6 text-center">Actions</th>
         </tr>
       </thead>
-      <tbody className="text-gray-600 text-sm font-light">
+      <tbody className="text-gray-600 dark:text-gray-300 text-sm font-light">
         {leads.map((lead, index) => (
           <tr
             key={lead._id}
-            className="border-b border-gray-200 hover:bg-yellow-100 cursor-pointer"
+            className="border-b border-gray-200 dark:border-gray-700 hover:bg-yellow-100 dark:hover:bg-yellow-900 cursor-pointer"
             onClick={() => handleLeadSelect(lead)}
           >
             <td className="py-3 px-6 text-left whitespace-nowrap">{lead.name}</td>
@@ -89,12 +90,12 @@ const LeadTable: React.FC<LeadTableProps> = ({ leads, handleLeadSelect, openMenu
             <td className="py-3 px-6 text-center">
               <div className="relative" ref={menuRef}>
                 <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === lead._id ? null : lead._id)}} className="focus:outline-none">
-                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                  <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
                 </button>
                 {openMenuId === lead._id && (
-                  <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 ${leads.length - index <= 2 ? 'bottom-full' : ''}`}>
-                    <a href="#" onClick={(e) => {e.stopPropagation(); handleSave(lead)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-300">Save</a>
-                    <a href="#" onClick={(e) => {e.stopPropagation(); handleDelete(lead._id)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-300">Delete</a>
+                  <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 ${leads.length - index <= 2 ? 'bottom-full' : ''}`}>
+                    <a href="#" onClick={(e) => {e.stopPropagation(); handleSave(lead)}} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-300 dark:hover:bg-yellow-700">Save</a>
+                    <a href="#" onClick={(e) => {e.stopPropagation(); handleDelete(lead._id)}} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-300 dark:hover:bg-yellow-700">Delete</a>
                   </div>
                 )}
               </div>
@@ -120,20 +121,20 @@ interface LeadCardsProps {
 const LeadCards: React.FC<LeadCardsProps> = ({ leads, handleLeadSelect, openMenuId, setOpenMenuId, handleSave, handleDelete, menuRef, formatAddress }) => (
   <div className="md:hidden">
     {leads.map((lead, index) => (
-      <div key={lead._id} className="bg-white rounded-lg shadow-lg p-4 mb-4" onClick={() => handleLeadSelect(lead)}>
+      <div key={lead._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-4" onClick={() => handleLeadSelect(lead)}>
         <div className="flex justify-between items-start">
           <div>
-            <p className="font-bold text-lg text-gray-800">{lead.name}</p>
-            <p className="text-sm text-gray-600">{formatAddress(lead)}</p>
+            <p className="font-bold text-lg text-gray-800 dark:text-white">{lead.name}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{formatAddress(lead)}</p>
           </div>
           <div className="relative" ref={menuRef}>
             <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === lead._id ? null : lead._id)}} className="focus:outline-none">
-              <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+              <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
             </button>
             {openMenuId === lead._id && (
-              <div className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 ${leads.length - index <= 2 ? 'bottom-full' : ''}`}>
-                <a href="#" onClick={(e) => {e.stopPropagation(); handleSave(lead)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-300">Save</a>
-                <a href="#" onClick={(e) => {e.stopPropagation(); handleDelete(lead._id)}} className="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-300">Delete</a>
+              <div className={`absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 ${leads.length - index <= 2 ? 'bottom-full' : ''}`}>
+                <a href="#" onClick={(e) => {e.stopPropagation(); handleSave(lead)}} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-300 dark:hover:bg-yellow-700">Save</a>
+                <a href="#" onClick={(e) => {e.stopPropagation(); handleDelete(lead._id)}} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-yellow-300 dark:hover:bg-yellow-700">Delete</a>
               </div>
             )}
           </div>
@@ -158,25 +159,25 @@ interface DesktopAnalysisDisplayProps {
 const DesktopAnalysisDisplay: React.FC<DesktopAnalysisDisplayProps> = ({ selectedLead, analysis, analyzing, formatAddress }) => {
   if (!selectedLead) {
     return (
-      <div className="hidden md:block w-1/2 p-4 bg-white rounded-lg shadow-lg ml-4">
-        <p className="text-gray-500 text-center">Select a lead to view analysis</p>
+      <div className="hidden md:block w-1/2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg ml-4">
+        <p className="text-gray-500 dark:text-gray-400 text-center">Select a lead to view analysis</p>
       </div>
     );
   }
 
   return (
-    <div className="hidden md:block w-1/2 p-4 bg-white rounded-lg shadow-lg ml-4">
+    <div className="hidden md:block w-1/2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg ml-4">
       <div className="mb-4">
-        <h3 className="font-bold text-gray-800">{selectedLead.name}</h3>
-        <p className="text-gray-700">{formatAddress(selectedLead)}</p>
+        <h3 className="font-bold text-gray-800 dark:text-white">{selectedLead.name}</h3>
+        <p className="text-gray-700 dark:text-gray-300">{formatAddress(selectedLead)}</p>
       </div>
       {analyzing && (
         <div className="flex items-center justify-center">
           <div className="animate-pulse flex flex-col items-center">
-            <p>Connecting to DeKalb County Records...</p>
-            <p>Fetching Market Comps...</p>
-            <p>Analyzing Mortgage & Liens...</p>
-            <p>Vetting Complete!</p>
+            <p className="dark:text-white">Connecting to DeKalb County Records...</p>
+            <p className="dark:text-white">Fetching Market Comps...</p>
+            <p className="dark:text-white">Analyzing Mortgage & Liens...</p>
+            <p className="dark:text-white">Vetting Complete!</p>
           </div>
         </div>
       )}
@@ -184,20 +185,20 @@ const DesktopAnalysisDisplay: React.FC<DesktopAnalysisDisplayProps> = ({ selecte
         <div>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p className="text-sm text-gray-600">Estimated Market Value</p>
-              <p className="font-bold text-lg text-gray-800">${analysis.marketValue.toLocaleString()}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Market Value</p>
+              <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.marketValue.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Estimated Mortgage Balance</p>
-              <p className="font-bold text-lg text-gray-800">${analysis.mortgageBalance.toLocaleString()}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Mortgage Balance</p>
+              <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.mortgageBalance.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Estimated Equity</p>
-              <p className="font-bold text-lg text-gray-800">${analysis.equity.toLocaleString()}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Equity</p>
+              <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.equity.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Profit Potential</p>
-              <p className="font-bold text-lg text-gray-800">${analysis.profitPotential.toLocaleString()}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Profit Potential</p>
+              <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.profitPotential.toLocaleString()}</p>
             </div>
           </div>
           {(() => {
@@ -207,23 +208,23 @@ const DesktopAnalysisDisplay: React.FC<DesktopAnalysisDisplayProps> = ({ selecte
 
             if (analysis.profitPotential < 0) {
               recommendationText = "UNPROFITABLE";
-              bgColorClass = "bg-red-100";
-              textColorClass = "text-red-600";
+              bgColorClass = "bg-red-100 dark:bg-red-900";
+              textColorClass = "text-red-600 dark:text-red-300";
             } else if (analysis.dealScore < 85) {
               recommendationText = "BORDERLINE - LOW DEAL SCORE";
-              bgColorClass = "bg-orange-100";
-              textColorClass = "text-orange-600";
+              bgColorClass = "bg-orange-100 dark:bg-orange-900";
+              textColorClass = "text-orange-600 dark:text-orange-300";
             } else {
               recommendationText = "GO - HIGH PROFIT POTENTIAL";
-              bgColorClass = "bg-green-100";
-              textColorClass = "text-green-600";
+              bgColorClass = "bg-green-100 dark:bg-green-900";
+              textColorClass = "text-green-600 dark:text-green-300";
             }
 
             return (
               <div className={`text-center p-4 rounded-lg ${bgColorClass}`}>
-                <p className="text-sm text-gray-500">Recommendation</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Recommendation</p>
                 <p className={`font-bold text-2xl ${textColorClass}`}>{recommendationText}</p>
-                <p className="font-bold text-xl !text-black">{analysis.dealScore}/100</p>
+                <p className="font-bold text-xl text-black dark:text-white">{analysis.dealScore}/100</p>
               </div>
             );
           })()}
@@ -248,11 +249,11 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, reportingFilter, s
     const { profitPotential, dealScore } = lead.analysis;
 
     if (profitPotential < 0) {
-      return 'bg-red-100'; // Unprofitable
+      return 'bg-red-100 dark:bg-red-900'; // Unprofitable
     } else if (dealScore < 85) {
-      return 'bg-orange-100'; // Borderline
+      return 'bg-orange-100 dark:bg-orange-900'; // Borderline
     } else {
-      return 'bg-green-100'; // Profitable
+      return 'bg-green-100 dark:bg-green-900'; // Profitable
     }
   };
 
@@ -290,14 +291,14 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, reportingFilter, s
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 mt-8">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mt-8">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Reporting</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Reporting</h2>
         <div className="flex items-center space-x-4">
           <input
             type="text"
             placeholder="Filter leads..."
-            className="p-2 border border-gray-300 rounded-md text-gray-800"
+            className="p-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-800 dark:text-white bg-white dark:bg-gray-700"
             value={reportingFilter}
             onChange={(e) => setReportingFilter(e.target.value)}
           />
@@ -312,7 +313,7 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, reportingFilter, s
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <tr className="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('name')}>Name</th>
               <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('address')}>Address</th>
               <th className="py-3 px-6 text-left cursor-pointer" onClick={() => requestReportingSort('freshStartAmount')}>Amount</th>
@@ -323,16 +324,16 @@ const ReportingCard: React.FC<ReportingCardProps> = ({ leads, reportingFilter, s
               <th className="py-3 px-6 text-center cursor-pointer" onClick={() => requestReportingSort('status')}>Status</th>
             </tr>
           </thead>
-          <tbody className="text-gray-600 text-sm font-light">
+          <tbody className="text-gray-600 dark:text-gray-300 text-sm font-light">
             {leads.map((lead) => (
-              <tr key={lead._id} className={`border-b border-gray-200 hover:bg-gray-100 ${getRowClass(lead)}`}>
+              <tr key={lead._id} className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 ${getRowClass(lead)}`}>
                 <td className="py-3 px-6 text-left whitespace-nowrap">{lead.name}</td>
                 <td className="py-3 px-6 text-left">{formatAddress(lead)}</td>
                 <td className="py-3 px-6 text-left">${lead.freshStartAmount.toLocaleString()}</td>
                 <td className="py-3 px-6 text-left">{new Date(lead.createdAt).toLocaleDateString()}</td>
                 <td className="py-3 px-6 text-left">{lead.analysis?.marketValue ? `$${lead.analysis.marketValue.toLocaleString()}` : 'N/A'}</td>
                 <td className="py-3 px-6 text-left">{lead.analysis?.profitPotential ? `$${lead.analysis.profitPotential.toLocaleString()}` : 'N/A'}</td>
-                <td className="py-3 px-6 text-left text-gray-900">{lead.analysis?.dealScore !== undefined && lead.analysis?.dealScore !== null ? lead.analysis.dealScore : 'N/A'}</td>
+                <td className="py-3 px-6 text-left text-gray-900 dark:text-white">{lead.analysis?.dealScore !== undefined && lead.analysis?.dealScore !== null ? lead.analysis.dealScore : 'N/A'}</td>
                 <td className="py-3 px-6 text-center">
                   <span className={`py-1 px-3 rounded-full text-xs ${lead.status === 'New' ? 'bg-blue-200 text-blue-600' : 'bg-green-200 text-green-600'}`}>
                     {lead.status}
@@ -528,24 +529,27 @@ export default function Admin() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <header className="bg-white shadow">
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
+      <header className="bg-white dark:bg-gray-800 shadow">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center max-w-screen-xl">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-          <button onClick={handleLogout} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Logout
-          </button>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <ThemeSwitcher />
+            <button onClick={handleLogout} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              Logout
+            </button>
+          </div>
         </div>
       </header>
       <main className="container mx-auto px-6 py-8 max-w-screen-xl">
         <div className="flex flex-col md:flex-row">
-          <div className="bg-white rounded-lg shadow-lg p-8 md:w-1/2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 md:w-1/2">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Leads</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Leads</h2>
               <input
                 type="text"
                 placeholder="Filter by name or address..."
-                className="p-2 border border-gray-300 rounded-md text-gray-800"
+                className="p-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-800 dark:text-white bg-white dark:bg-gray-700"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               />
@@ -573,16 +577,16 @@ export default function Admin() {
             {selectedLead && (
               <div>
                 <div className="mb-4">
-                  <h3 className="font-bold text-gray-800">{selectedLead.name}</h3>
-                  <p className="text-gray-700">{formatAddress(selectedLead)}</p>
+                  <h3 className="font-bold text-gray-800 dark:text-white">{selectedLead.name}</h3>
+                  <p className="text-gray-700 dark:text-gray-300">{formatAddress(selectedLead)}</p>
                 </div>
                 {analyzing && (
                   <div className="flex items-center justify-center">
                     <div className="animate-pulse flex flex-col items-center">
-                      <p>Connecting to DeKalb County Records...</p>
-                      <p>Fetching Market Comps...</p>
-                      <p>Analyzing Mortgage & Liens...</p>
-                      <p>Vetting Complete!</p>
+                      <p className="dark:text-white">Connecting to DeKalb County Records...</p>
+                      <p className="dark:text-white">Fetching Market Comps...</p>
+                      <p className="dark:text-white">Analyzing Mortgage & Liens...</p>
+                      <p className="dark:text-white">Vetting Complete!</p>
                     </div>
                   </div>
                 )}
@@ -590,20 +594,20 @@ export default function Admin() {
                   <div>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
-                        <p className="text-sm text-gray-600">Estimated Market Value</p>
-                        <p className="font-bold text-lg text-gray-800">${analysis.marketValue.toLocaleString()}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Market Value</p>
+                        <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.marketValue.toLocaleString()}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">Estimated Mortgage Balance</p>
-                        <p className="font-bold text-lg text-gray-800">${analysis.mortgageBalance.toLocaleString()}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Mortgage Balance</p>
+                        <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.mortgageBalance.toLocaleString()}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">Estimated Equity</p>
-                        <p className="font-bold text-lg text-gray-800">${analysis.equity.toLocaleString()}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Equity</p>
+                        <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.equity.toLocaleString()}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">Profit Potential</p>
-                        <p className="font-bold text-lg text-gray-800">${analysis.profitPotential.toLocaleString()}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Profit Potential</p>
+                        <p className="font-bold text-lg text-gray-800 dark:text-white">${analysis.profitPotential.toLocaleString()}</p>
                       </div>
                     </div>
                     {(() => {
@@ -613,24 +617,24 @@ export default function Admin() {
 
                       if (analysis.profitPotential < 0) {
                         recommendationText = "UNPROFITABLE";
-                        bgColorClass = "bg-red-100";
-                        textColorClass = "text-red-600";
+                        bgColorClass = "bg-red-100 dark:bg-red-900";
+                        textColorClass = "text-red-600 dark:text-red-300";
                       } else if (analysis.dealScore < 85) {
                         recommendationText = "BORDERLINE - LOW DEAL SCORE";
-                        bgColorClass = "bg-orange-100";
-                        textColorClass = "text-orange-600";
+                        bgColorClass = "bg-orange-100 dark:bg-orange-900";
+                        textColorClass = "text-orange-600 dark:text-orange-300";
                       } else {
                         recommendationText = "GO - HIGH PROFIT POTENTIAL";
-                        bgColorClass = "bg-green-100";
-                        textColorClass = "text-green-600";
+                        bgColorClass = "bg-green-100 dark:bg-green-900";
+                        textColorClass = "text-green-600 dark:text-green-300";
                       }
 
                       return (
                         <div className={`text-center p-4 rounded-lg ${bgColorClass}`}>
-                          <p className="text-sm text-gray-500">Recommendation</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Recommendation</p>
                           <p className={`font-bold text-2xl ${textColorClass}`}>{recommendationText}</p>
-                          <p className="text-sm text-gray-500 mt-2">Deal Score</p>
-                          <p className="font-bold text-xl !text-black">{analysis.dealScore}/100</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Deal Score</p>
+                          <p className="font-bold text-xl text-black dark:text-white">{analysis.dealScore}/100</p>
                         </div>
                       );
                     })()}
